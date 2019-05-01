@@ -5,7 +5,7 @@ import { ProjectType, ProjectMetadata } from '../../../common/interfaces';
 const dep = (p: any) => (name: string) => (p.dependencies ? p.dependencies[name] : undefined);
 const devDep = (p: any) => (name: string) => (p.devDependencies ? p.devDependencies[name] : undefined);
 
-export const detect = (base: string): ProjectMetadata | undefined => {
+export const detect = (base: string, srcPath: string): ProjectMetadata | undefined => {
   const path = ['package.json', '../package.json']
     .map(p => join(base, p))
     .filter(existsSync)
@@ -18,14 +18,14 @@ export const detect = (base: string): ProjectMetadata | undefined => {
   const exists = (file: string) => existsSync(join(base, file));
   const d = dep(content);
   const dd = devDep(content);
-  if (dd('@angular/cli') && exists(join('src', 'tsconfig.app.json'))) {
+  if (dd('@angular/cli') && exists(join(srcPath, 'tsconfig.app.json'))) {
     return {
       type: ProjectType.AngularCLI,
       version: dd('@angular/cli'),
       details: {
         typescript: dd('typescript'),
-        tsconfigPath: join(base, 'src', 'tsconfig.app.json'),
-        sourceDir: 'src'
+        tsconfigPath: join(base, srcPath, 'tsconfig.app.json'),
+        sourceDir: srcPath
       }
     };
   }
@@ -42,7 +42,7 @@ export const detect = (base: string): ProjectMetadata | undefined => {
       details: {
         typescript: dd('typescript'),
         tsconfigPath: join(base, 'tsconfig.json'),
-        sourceDir: 'src'
+        sourceDir: srcPath
       }
     };
   }
@@ -51,7 +51,7 @@ export const detect = (base: string): ProjectMetadata | undefined => {
       type: ProjectType.CreateReactApp,
       version: d('react-scripts'),
       details: {
-        sourceDir: 'src'
+        sourceDir: srcPath
       }
     };
   }

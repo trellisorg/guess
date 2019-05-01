@@ -11,9 +11,9 @@ const unique = (a: RoutingModule[]) => {
   return Object.keys(map).map(k => map[k]);
 };
 
-export const parseRoutes = (base: string) => {
+export const parseRoutes = (base: string, srcPath: string = 'src') => {
   let result: RoutingModule[] | undefined = undefined;
-  const app = detect(base);
+  const app = detect(base, srcPath);
   if (!app) {
     throw new Error('Cannot detect the application type');
   }
